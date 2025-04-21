@@ -11,9 +11,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 import os
-import pandas 
 import tensorflow as tf
-
+import pandas
 # Recreate the exact same model, including its weights and the optimizer
 model = tf.keras.models.load_model('saved_model/')
 
@@ -24,26 +23,25 @@ model.summary()
 print()
 print("----Actual test for digits----")
 
-mnist_label_file_path = '/Users/choiwoojin/Downloads/mnist_inference/t_labels.txt'
+mnist_label_file_path =  "t_labels.txt"
 mnist_label = open(mnist_label_file_path, "r")
 cnt_correct = 0
 for index in range(10):
 	#-- read a label
-	label = mnist_label.readline()
+	label = mnist_label.readline().strip()
 	#print(label)
 	#-- formatting the input image (image data)
 	img = Image.open('dataset_test/testimgs/' + str(index+1) + '.png').convert("L")
 	img = img.resize((28,28))
-	im2arr = np.array(img)
-	im2arr = im2arr.reshape(1,28,28,1)
+	im2arr = np.array(img).astype('float32') / 255.0
+	im2arr = im2arr.reshape(1, 28, 28, 1)
 
 	# Predicting the Test set results
-	y_pred = np.argmax(model.predict(im2arr), axis=1)
+	y_pred = np.argmax(model.predict(im2arr), axis=1)	#<-- 7 or 4
 	
 	print()
-	pred_label = np.argmax(y_pred) 
-	print("label = {} --> predicted label= {}".format(label, pred_label))
-
+	pred_label = y_pred[0]  
+	print(f"\nlabel = {label} --> predicted label= {y_pred[0]}")
 	#-- compute the accuracy of the preditcion
 	if int(label)==pred_label:
 		cnt_correct += 1
@@ -64,3 +62,4 @@ data = {
 
 df = pandas.DataFrame(data)
 print(df)
+
